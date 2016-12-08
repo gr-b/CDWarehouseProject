@@ -6,11 +6,13 @@
  */
 
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
@@ -25,9 +27,8 @@ public class XMLParser {
 		this.m = m;
 	}
 	
-	public void parse(String filename){
+	public void parse(String filename) throws FileNotFoundException, XMLStreamException{
 		boolean isCatalog = true;
-		try{
 			XMLInputFactory factory = XMLInputFactory.newInstance();
 			XMLEventReader eReader = factory.createXMLEventReader(
 					new FileReader(filename));
@@ -43,15 +44,15 @@ public class XMLParser {
 						StartElement start = event.asStartElement();
 						String sName = start.getName().getLocalPart();
 						if(sName.equals("catalog")){
-							System.out.println("Parsed start of catalog");
+							//System.out.println("Parsed start of catalog");
 							isCatalog = true;
 						} else if(sName.equals("wishlist")){
 							isCatalog = false;
-							System.out.println("Parsed start of wishlist");
+							//System.out.println("Parsed start of wishlist");
 						} else if(sName.equals("cd")){
-							System.out.println("Parsed start of cd");
+							//System.out.println("Parsed start of cd");
 							CDModel newCd = parseCD(eReader);
-							System.out.println("Found CD: " + newCd.toString());
+							//System.out.println("Found CD: " + newCd.toString());
 							if(isCatalog){
 								m.add(newCd);
 							} else {
@@ -59,7 +60,7 @@ public class XMLParser {
 								m.addToWishlist(newCd);
 							}
 						} else {
-							System.out.println("Found start element:" + sName);
+							//System.out.println("Found start element:" + sName);
 						}
 						
 						// Turn on respective booleans to show where we are.
@@ -70,21 +71,17 @@ public class XMLParser {
 						if(chars.getData().trim().equals("")){
 							// do nothing
 						} else {
-							System.out.println("Found chars:" + chars.getData());
+							//System.out.println("Found chars:" + chars.getData());
 						}
 						break;
 					case XMLStreamConstants.END_ELEMENT:
 						EndElement end = event.asEndElement();
-						System.out.println("End elt:" + end.getName().getLocalPart());
+						//System.out.println("End elt:" + end.getName().getLocalPart());
 						break;
 						
 				}
 				
 			}
-			
-		} catch(Exception e){ // Haha exceptions, heh
-			e.printStackTrace();
-		}
 	}
 	
 	public CDModel parseCD(XMLEventReader eReader){

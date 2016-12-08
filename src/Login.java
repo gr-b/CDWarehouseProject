@@ -3,10 +3,13 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
+import javax.xml.stream.XMLStreamException;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.awt.event.ActionEvent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextField;
@@ -16,6 +19,7 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_1;
+	private JLabel lblWelcomeToThe;
 	
 	Model m;
 
@@ -39,10 +43,10 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
-		m = new Model();
+		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, Main.width, Main.height);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -51,7 +55,7 @@ public class Login extends JFrame {
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
 		
-		JLabel lblWelcomeToThe = new JLabel("Welcome to the CD Warehouse!");
+		lblWelcomeToThe = new JLabel("Welcome to the CD Warehouse!");
 		panel.add(lblWelcomeToThe);
 		
 		JPanel panel_1 = new JPanel();
@@ -69,11 +73,13 @@ public class Login extends JFrame {
 		
 		textField = new JTextField();
 		textField.setBounds(197, 5, 86, 20);
+		textField.setText("grbishop");
 		panel_2.add(textField);
 		textField.setColumns(10);
 		
-		textField_1 = new JTextField();
+		textField_1 = new JPasswordField();
 		textField_1.setBounds(197, 33, 86, 20);
+		textField_1.setText("aaaaaa");
 		panel_2.add(textField_1);
 		textField_1.setColumns(10);
 		
@@ -84,7 +90,24 @@ public class Login extends JFrame {
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				updateWishlist(textField.getText());
+				m = new Model(textField.getText());
+				try{
+					updateWishlist(textField.getText());
+				} 
+				catch(FileNotFoundException e){
+					System.out.println("User not found!");
+					Login newLogin = new Login();
+					newLogin.putLoginErrorMessage();
+					newLogin.setVisible(true);
+					setVisible(false);
+					dispose();
+					return;
+				} catch (XMLStreamException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				// If there's no problems logging in:
 				Main myMain = new Main(textField.getText(), m);
 				myMain.setVisible(true);
 				setVisible(false);
@@ -97,6 +120,7 @@ public class Login extends JFrame {
 		JButton btnContinueAsGuest = new JButton("Continue as Guest");
 		btnContinueAsGuest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				m = new Model("Guest");
 				Main myMain = new Main("Guest", m);
 				myMain.setVisible(true);
 				setVisible(false);
@@ -105,10 +129,14 @@ public class Login extends JFrame {
 		});
 		panel_1.add(btnContinueAsGuest);
 		
+	}
+
+	protected void putLoginErrorMessage() {
+		this.lblWelcomeToThe.setText("Error: Username not found.");
 		
 	}
 
-	protected void updateWishlist(String username) {
+	protected void updateWishlist(String username) throws FileNotFoundException, XMLStreamException {
 		new XMLParser(m).parse(username);
 	}
 }

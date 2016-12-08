@@ -8,12 +8,22 @@ public class Model {
 	String selectedArtist;
 	String prevSelection;
 	
-	public Model(){
+	String username;
+	public boolean hasAlreadyParsed = false;
+	
+	public Model(String username){
 		cds = new ArrayList<CDModel>();
 		wishlist = new ArrayList<CDModel>();
 		selectedGenre = null;
 		selectedArtist = null;
 		prevSelection = null;
+		this.username = username;
+	}
+	
+	public void printCDs(){
+		for(CDModel cd : cds){
+			System.out.println("(" + cd.name + ")"); //+ ", " + cd.artist + ", " + cd.genre + );
+		}
 	}
 	
 	public ArrayList<String> getGenres(){
@@ -56,7 +66,32 @@ public class Model {
 	}
 
 	public void addToWishlist(CDModel newCd) {
-		wishlist.add(newCd);
+		// First, check if it would be a duplicate
+		if(!this.wishlist.contains(newCd)){
+			wishlist.add(newCd);
+		}
+		
+	}
+
+	public CDModel getCDModelWithTitle(String title) {
+		for(CDModel cd : cds){
+			if(cd.name.equals(title)){
+				return cd;
+			}
+		}
+		return null;
+	}
+
+	public void removeCDFromWishlistWithTitle(String title) {
+		int i = 0;
+		for(CDModel cd : wishlist){
+			if(cd.name.equals(title)){
+//				System.out.println("Found mathcing cd");
+				wishlist.remove(i);
+				return;
+			}
+			i++;
+		}
 		
 	}
 	

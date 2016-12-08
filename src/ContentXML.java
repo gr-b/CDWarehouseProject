@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ContentXML extends JPanel {
 
@@ -16,15 +17,26 @@ public class ContentXML extends JPanel {
 	 */
 	Model m;
 	JLabel nav;
+	//private Object ;
+	private Main main;
 	
-	public ContentXML(Model m) {
+	public ContentXML(Model m, Main main, JLabel nav) {
+		m.printCDs();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.m = m;
+		this.main = main;
+		this.nav= nav;
 		
-		this.nav = new JLabel("All CDs->");
-		add(nav);
-		addSelection("genre");
-		m.prevSelection = "genre";
+		//this.nav = new JLabel("All CDs->");
+		//add(nav);
+		//addSelection("genre");
+		if(m.selectedGenre != null){
+			addSelection(m.selectedGenre);
+		}
+		if(m.selectedArtist != null){
+			addSelection(m.selectedArtist);
+		}
+		//m.prevSelection = "genre";
 		
 		/*ArrayList<String> items = new ArrayList<String>();
 		if(selection.equals("genre")){
@@ -53,13 +65,19 @@ public class ContentXML extends JPanel {
 
 	}
 
-	protected void addSelection(String selection) {
+	public void addSelection(String selection) {
 		ArrayList<String> items = new ArrayList<String>();
 		if(selection.equals("genre")){
 			items = m.getGenres();
+			//System.out.println("!!!!!!!!!!!!!!!!!!!!");
 		} else {
 			items = m.constrainBySelection(selection);
 		}
+		items.sort(new Comparator<String>(){
+			public int compare(String a, String b){
+				return a.compareToIgnoreCase(b);
+			}
+		});
 		System.out.println("Selected: " + items.toString());
 		
 		for(String item : items){
@@ -92,13 +110,14 @@ public class ContentXML extends JPanel {
 			} else { // An artist has been selected
 				// Add a Cd pane.
 				CDModel toAdd = m.getCD(item);
-				System.out.println(toAdd.name);
-				add(new Cd(toAdd.name, "dfse"));
+				//System.out.println(toAdd.name);
+				add(new Cd(toAdd.name, "dfse", true, m));
 				
 				
 			}
 			
 		}
+		
 		
 	}
 
@@ -107,7 +126,12 @@ public class ContentXML extends JPanel {
 		if(m.selectedGenre != null) text += m.selectedGenre + " -> ";
 		if(m.selectedArtist != null) text += m.selectedArtist;
 		nav.setText(text);
-		add(nav);
+		
+		//JPanel navPanel = new JPanel();
+		//navPanel.add(nav);
+		
+		//navPanel.add(goBack);
+		//add(navPanel);
 	}
 
 }
